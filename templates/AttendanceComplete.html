@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Document</title>
+</head>
+<style>
+     #page::before{
+        content: "";
+        position: absolute;
+        background: url("{{url_for('static',filename='bg-test9.jpg')}}") no-repeat center center/cover;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.5;
+        width: 100%;
+        height: 100%;
+    }
+    #navbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px 20px;
+      background-color: black;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    #logo {
+      display: flex;
+      align-items: center;
+    }
+    #logo img {
+      height: 50px;
+      margin-right: 20px;
+    }
+    #navbar ul {
+      list-style: none;
+      display: flex;
+      padding: 0;
+      margin: 0;
+    }
+    #navbar ul li {
+      margin: 0 15px;
+    }
+    #navbar ul li a {
+      text-decoration: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 8px 15px;
+      border-radius: 20px;
+      transition: 0.3s;
+      display: inline-block;
+    }
+    #navbar ul li a:hover {
+      background-color: white;
+      color: black;
+    }
+  
+
+</style>
+<body>
+    <nav id="navbar">
+		<div id="logo">
+		  <img src="{{url_for('static',filename='images/key-person2.png')}}" class="rounded-circle" alt="Icon">
+		  <ul>
+			<li class="item"><a href="/home">Home</a></li>
+			<li class="item"><a href="/contact">Contact Us</a></li>
+			<li class="item"><a href="/adminlogin">Admin Login</a></li>
+		  </ul>
+		</div>
+	  </nav>
+    <section id="page">
+    <div class="container" style="text-align: center;color: brown;">
+        <br><br><br><br>
+    <h1><strong> Attendance has been marked successfully!</strong></h1>
+    <br><br><br><br>
+    <form action="/" method="GET">
+    <button class="btn btn-primary">Go to Home Page</button>
+
+</form>
+</div>
+</section>
+</body>
+</html>

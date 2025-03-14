@@ -114,61 +114,51 @@ html{
 
 }
 
-/* Navigation Bar*/
-#navbar {
-    display:flex ;
-    align-items: center;
-    position: sticky;
-    top: 0px;
-}
 
-#navbar::before{
-    content: "";
-    background-color: black;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    height: 100%;
-    width: 100%;
-    z-index: -1;  
-    opacity: 1.0;
-}
+
 /* Navigation Bar: Logo and Image*/
 
-
-#logo{
-    margin: 10px 34px;
-
-}
-#logo img{
-    height:59px;
-    margin: 3px 5px;
-
-}
 /*Navigation bar : list styling*/
-
-#navbar ul{
-    display: flex;
-    font-family: 'Baloo Bhai',cursive;
-}
-
-#navbar ul li{
-    list-style: none;
-    font-size: 1.3rem;
-}
-
-#navbar ul li a{
-    color:white;
-   display: block;
-   padding: 3px 24px;
-   border-radius: 20px;
-   text-decoration: none;
-}
-#navbar ul li a:hover{
-    color:black;
-    background-color:white;
-    
-}
+#navbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px 20px;
+      background-color: black;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    #logo {
+      display: flex;
+      align-items: center;
+    }
+    #logo img {
+      height: 50px;
+      margin-right: 20px;
+    }
+    #navbar ul {
+      list-style: none;
+      display: flex;
+      padding: 0;
+      margin: 0;
+    }
+    #navbar ul li {
+      margin: 0 15px;
+    }
+    #navbar ul li a {
+      text-decoration: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 8px 15px;
+      border-radius: 20px;
+      transition: 0.3s;
+      display: inline-block;
+    }
+    #navbar ul li a:hover {
+      background-color: white;
+      color: black;
+    }
 /*Home Section*/
 
 #home{
@@ -185,18 +175,27 @@ html{
 </head>
 </head>
 <body>
-<nav id="navbar">
+<!-- <nav id="navbar">
     <div id="logo">
         <img src="{{url_for('static',filename='images/key-person2.png')}}" class="rounded-circle" alt="Icon">
     </div>
 <ul>
     <li class="item"><a href="/">Home</a></li>
-    <!--<li class="item"><a href="/contact">Contact Us </a></li> -->
-	    <li class="item" ><a href="/how">Admin Login</a></li>
+	    <li class="item" ><a href="/adminlogin">Admin Login</a></li>
   
 
 </ul>
-</nav>
+</nav> -->
+<nav id="navbar">
+    <div id="logo">
+      <img src="{{url_for('static',filename='images/key-person2.png')}}" class="rounded-circle" alt="Icon">
+      <ul>
+        <li class="item"><a href="/home">Home</a></li>
+        <li class="item"><a href="/contact">Contact Us</a></li>
+        <li class="item"><a href="/adminlogin">Admin Login</a></li>
+      </ul>
+    </div>
+  </nav>
  <div id="contact-box">
     <form action="\name" method="POST">
     <div class="form-group">
@@ -215,9 +214,9 @@ html{
 </form>
 </div>
 <footer>
-<div class="center">
+<!-- <div class="center">
     copyright &copy; Amlan Mohanty 2022. All rights reserved!
-</div>
+</div> -->
 </footer>
 </body>
 </html>

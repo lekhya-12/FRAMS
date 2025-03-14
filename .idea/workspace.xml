@@ -36,7 +36,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/templates/form.html" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/templates/AdminLogin.html" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -80,13 +80,13 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.app">
-    <configuration name="form2.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Face-Based-Attendance/templates/form2.html" useBuiltInWebServerPort="true">
+    <configuration name="TodaysAttendance.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Face-Based-Attendance/templates/TodaysAttendance.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
-    <configuration name="form.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Face-Based-Attendance/templates/form.html" useBuiltInWebServerPort="true">
+    <configuration name="AdminLogin.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Face-Based-Attendance/templates/AdminLogin.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
-    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Face-Based-Attendance/templates/index.html" useBuiltInWebServerPort="true">
+    <configuration name="StudentRegistration.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Face-Based-Attendance/templates/StudentRegistration.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
