@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <title>Contact Us</title>
@@ -153,5 +153,135 @@
       </form>
     </div>
   </section>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Contact Us - FRAMS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f0ff; /* Light Lavender */
+            color: #4a4a4a;
+        }
+        .navbar {
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .contact-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+        }
+        .contact-card {
+            width: 600px;  /* Increased width */
+            padding: 50px;
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .contact-card img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        .form-group label {
+            font-weight: 600;
+            text-align: left;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .btn-custom {
+            background-color: #6a5acd; /* Soft Purple */
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            width: 100%;
+            border: none;
+        }
+        .btn-custom:hover {
+            background-color: #5a4dbd;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            margin-top: 50px;
+            box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <script>
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            alert("Feedback sent successfully!");
+            document.getElementById("contact-form").reset();
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">FRAMS</a>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-custom" href="/adminlogin">Admin Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contact Form Section -->
+    <div class="contact-container">
+        <div class="contact-card">
+            <img src="{{url_for('static',filename='images/key-person2.png')}}" class="rounded-circle" alt="Icon">
+            <h2 class="mb-3">Contact Us</h2>
+            <form id="contact-form" action="https://formspree.io/xjvapqwa" method="POST" onsubmit="handleFormSubmit(event)">
+                <div class="form-group text-start">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" placeholder="Enter Your Name" required>
+                </div>
+                <div class="form-group text-start">
+                    <label for="email">E-mail:</label>
+                    <input type="email" name="email" id="email" placeholder="Enter Your E-mail" required>
+                </div>
+                <div class="form-group text-start">
+                    <label for="phone">Contact No:</label>
+                    <input type="tel" name="phone" id="phone" placeholder="Enter Your Contact Number" required>
+                </div>
+                <div class="form-group text-start">
+                    <label for="message">Feedback:</label>
+                    <textarea name="message" id="message" rows="5" placeholder="Your Feedback is valuable. Please write to us." required></textarea>
+                </div>
+                <button type="submit" class="btn-custom">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <footer> 
+        &copy; 2025 FRAMS. All Rights Reserved.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

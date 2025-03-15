@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Subjects - FRAMS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+
+        .dashboard-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #4B0082;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #4B0082;
+            text-align: center;
+        }
+
+        .table-container {
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .table th {
+            background: #6a5acd;
+            color: white;
+        }
+
+        .btn {
+            background-color: #6a5acd;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #5a4dbd;
+        }
+
+        .form-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f0ff;
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <h2>Teacher Dashboard</h2>
+            <ul>
+                <li><a href="/new">Register Student</a></li>
+                <li><a href="/manage_subjects">Manage Subjects</a></li>
+                <li><a href="/view_attendance">View Attendance Report</a></li>
+                <li><a href="/mark">Punch Attendance</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>Manage Subjects</h1>
+
+            <div class="table-container">
+                <h3>List of Subjects:</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Subject Code</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                        <tr>
+                            <td>{{ subject[1] }}</td>
+                            <td>{{ subject[0] }}</td>
+                            <td>
+                                <a href="/edit_subject/{{ subject['id'] }}" class="btn btn-warning">Edit</a>
+                                <a href="/delete_subject/{{ subject['id'] }}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add Subject Form -->
+            <div class="form-container">
+                <h3>Add a New Subject</h3>
+                <form action="/add_subject" method="POST">
+                    <div class="form-group">
+                        <label for="name">Subject Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="code">Subject Code:</label>
+                        <input type="text" id="code" name="code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Year:</label>
+                        <select id="year" name="year">
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="semester">Semester:</label>
+                        <select id="semester" name="semester">
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" id="description" name="description">
+                    </div>
+                    <button type="submit" class="btn">Add Subject</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
