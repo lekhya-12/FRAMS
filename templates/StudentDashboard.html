@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #e0d8fe;
+        }
+
+        /* Navbar */
+        .header {
+            background: #4B0082;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h2 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: 0.3s ease;
+        }
+
+        .header a:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Container */
+        .container {
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4B0082;
+            font-weight: 600;
+        }
+
+        /* Attendance Summary */
+        .attendance-summary {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            width: 220px;
+            box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.1);
+            transition: 0.3s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-box h3 {
+            margin: 0;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .stat-box p {
+            font-size: 1.6em;
+            color: #4B0082;
+            font-weight: bold;
+        }
+
+        /* Table */
+        table {
+            width: 70%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #4B0082;
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Student Dashboard</h2>
+        <div>
+            <a href="/home">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome, {{ student_name }}</h1>
+
+        <!-- Total Attendance Summary -->
+        <div class="attendance-summary">
+            <div class="stat-box">
+                <h3>Total Attendance</h3>
+                <p>{{ total_attendance }}%</p>
+            </div>
+            <div class="stat-box">
+                <h3>Number of Classes Attended</h3>
+                <p>{{ total_attended }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Total Classes Conducted</h3>
+                <p>{{ total_classes_all }}</p>
+            </div>
+        </div>
+
+        <!-- Subject-wise Attendance -->
+        <h2>Subject-wise Attendance</h2>
+        <table>
+            <tr>
+                <th>Subject</th>
+                <th>Classes Attended</th>
+                <th>Total Classes</th>
+                <th>Percentage</th>
+            </tr>
+            {% for subject, data in subject_attendance.items() %}
+            <tr>
+                <td>{{ subject }}</td>
+                <td>{{ data.attended }}</td>
+                <td>{{ data.total }}</td>
+                <td>{{ data.percentage }}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+</body>
+</html>

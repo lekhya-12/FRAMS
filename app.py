@@ -1,14 +1,21 @@
-from flask import Flask,render_template,request,flash,jsonify,redirect,url_for
+from flask import Flask,render_template,request,flash,jsonify,redirect,url_for,session,send_file
+import pickle
+import pandas as pd
 import cv2
 import numpy as np
 import face_recognition
 import os
+import pickle
 from datetime import datetime
 from datetime import date
 import sqlite3
 
 name="amlan"
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+
+# Global set to track students marked in the current session
+marked_students = set()
 
 # Database setup
 conn = sqlite3.connect('information.db')
@@ -35,6 +42,74 @@ conn = sqlite3.connect('information.db')
 conn.execute("INSERT OR IGNORE INTO Admin (username, password) VALUES ('admin', 'admin123')")
 conn.commit()
 conn.close()
+
+def update_encodings():
+    images = []
+    classNames = []
+    myList = os.listdir('Training images')
+    print("Images found:", myList)
+
+    for cl in myList:
+        curImg = cv2.imread(f'Training images/{cl}')
+        images.append(curImg)
+        classNames.append(os.path.splitext(cl)[0])
+
+    def findEncodings(images):
+        encodeList = []
+        for img in images:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            encode = face_recognition.face_encodings(img)
+            if encode:
+                encodeList.append(encode[0])
+            else:
+                print(f"Skipping {img} - can't be encoded")
+        return encodeList
+
+    print("Encoding images...")
+    encodeListKnown = findEncodings(images)
+
+    # Save encodings
+    with open('encodings.pickle', 'wb') as f:
+        pickle.dump((encodeListKnown, classNames), f)
+
+    print("Encodings saved successfully!")
+
+
+@app.route('/download_attendance')
+def download_attendance():
+    date = request.args.get('date')
+    month = request.args.get('month')
+    subject = request.args.get('subject')
+
+    conn = sqlite3.connect('information.db')
+    cursor = conn.cursor()
+
+    query = "SELECT rollno, name, time, date, subject FROM Attendance WHERE 1=1"
+    params = []
+
+    if date:
+        query += " AND date = ?"
+        params.append(date)
+    if month:
+        query += " AND strftime('%m', date) = ?"
+        params.append(month.zfill(2))  # Ensure month is 2 digits
+    if subject:
+        query += " AND subject = ?"
+        params.append(subject)
+
+    cursor.execute(query, params)
+    data = cursor.fetchall()
+    conn.close()
+
+    # Convert to DataFrame
+    df = pd.DataFrame(data, columns=["Roll Number", "Student Name", "Time", "Date", "Subject"])
+
+    # Save to an Excel file
+    filename = "attendance_report.xlsx"
+    df.to_excel(filename, index=False)
+
+    # Send file as response
+    return send_file(filename, as_attachment=True)
 
 @app.route('/view_attendance', methods=['GET'])
 def view_attendance():
@@ -94,13 +169,15 @@ def filter_attendance():
     # Convert results to JSON
     attendance_list = [
         {
+            "rollno": row["ROLLNO"],
             "name": row["NAME"],
             # "roll_no": row["Roll_Number"],
             # "subject": row["Subject"],
             # "date": row["Date"],
             # "status": row["Status"]
             "time": row["Time"],
-            "date": row["Date"]
+            "date": row["Date"],
+            "subject": row["Subject"]
         } 
         for row in attendance_records
     ]
@@ -118,7 +195,7 @@ def add_subject():
     conn = sqlite3.connect('information.db')
     cursor = conn.cursor()
     cursor.execute("INSERT INTO Subjects (name, code, year, semester, description) VALUES (?, ?, ?, ?, ?)",
-                   (name, code, year, semester, description))
+                   (name.upper(), code, year, semester, description.upper()))
     conn.commit()
     conn.close()
     # return "Subject Added Successfully!"
@@ -152,11 +229,12 @@ def teacher_login():
         conn.close()
 
         if teacher:
-            return render_template('TeacherDashboard.html')
+            session['teacher_name'] = teacher[1]
+            return redirect(url_for('teacher_dashboard'))
         else:
-            return render_template('TeacherLogin.html')
+            return render_template('TeacherLogin.html',message="Invalid Teacher ID or Password")
 
-    return render_template('TeacherLogin.html')
+    return render_template('TeacherLogin.html',message="Please enter Teacher ID and Password")
 
 
 @app.route('/teacher_register', methods=['GET', 'POST'])
@@ -172,17 +250,109 @@ def teacher_register():
         conn = sqlite3.connect('information.db')
         # try:
         conn.execute("INSERT INTO Teachers (id,name, dept, email, phone_number, password) VALUES (?,?, ?, ?, ?, ?)",
-                         (tid,name, dept, email, phone_number, password))
+                         (tid,name.upper(), dept.upper(), email.upper(), phone_number, password))
         conn.commit()
-            # flash("Registration successful! Please login.", "success")
-        # except sqlite3.IntegrityError:
-        #     flash("Email already registered!", "danger")
-        # finally:
         conn.close()
 
         return render_template('TeacherLogin.html')
 
     return render_template('TeacherRegister.html')
+
+@app.route('/student_register', methods=['GET', 'POST'])
+def student_register():
+    if request.method == "POST":
+        name = request.form.get('name')
+        rollno=request.form.get('rollno')
+        year = request.form.get('year')
+        email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
+        password = request.form.get('password')
+
+        conn = sqlite3.connect('information.db')
+        conn.execute("INSERT INTO Students (roll_no, name, year, email, phone_number, password) VALUES (?,?, ?, ?, ?, ?)",
+                         (rollno,name.upper(), year, email.upper(), phone_number, password))
+        conn.commit()
+        conn.close()
+        update_encodings()
+        return render_template('StudentLogin.html')
+
+    return render_template('StudentRegister.html')
+
+@app.route("/teacher_dashbaord")
+def teacher_dashboard():
+    teacher_name = session.get("teacher_name")
+    if not teacher_name:
+        return "Unauthorized access. Please log in."
+    
+    conn = sqlite3.connect('information.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # Fetch total subjects
+    cursor.execute("SELECT COUNT(*) FROM Subjects")
+    total_subjects = cursor.fetchone()[0]
+
+    # Fetch total students
+    cursor.execute("SELECT COUNT(*) FROM Students")
+    total_students = cursor.fetchone()[0]
+
+    conn.close()
+
+    return render_template('TeacherDashboard.html', teacher_name=teacher_name, 
+                           total_subjects=total_subjects, total_students=total_students)
+
+@app.route("/student_dashboard")
+def student_dashboard():
+    student_name = session.get("student_name")  # Fetch logged-in student's name
+    if not student_name:
+        return "Unauthorized access. Please log in."
+
+    conn = sqlite3.connect("information.db")
+    cursor = conn.cursor()
+
+    # Fetch all subjects (including those the student hasn't attended)
+    cursor.execute("SELECT DISTINCT Subject FROM Attendance")
+    all_subjects = [row[0] for row in cursor.fetchall()]  # List of all subjects
+
+    # Fetch subject-wise attendance for the student
+    cursor.execute("SELECT Subject, COUNT(*) FROM Attendance WHERE NAME = ? GROUP BY Subject", (student_name.upper(),))
+    attendance_data = dict(cursor.fetchall())  # Convert to dictionary {subject: attended_count}
+
+    # Fetch total classes held for each subject
+    cursor.execute("SELECT Subject, COUNT(*) FROM Attendance GROUP BY Subject")
+    total_classes_dict = dict(cursor.fetchall())  # Convert to dictionary {subject: total_classes}
+
+    conn.close()
+
+    # Create a complete subject-wise attendance dictionary, setting attended = 0 if missing
+    subject_attendance = {}
+    for subject in all_subjects:
+        attended = attendance_data.get(subject, 0)  # Use 0 if student has not attended this subject
+        total_classes = total_classes_dict.get(subject, 1)  # Use 1 to avoid division by zero
+        percentage = round((attended / total_classes) * 100, 2)
+        subject_attendance[subject] = {
+            "attended": attended,
+            "total": total_classes,
+            "percentage": percentage
+        }
+
+    # Calculate total attendance percentage
+    total_attended = sum(attendance_data.values())
+    total_classes_all = sum(total_classes_dict.values()) or 1  # Avoid division by zero
+    total_attendance_percentage = round((total_attended / total_classes_all) * 100, 2)
+
+    # return render_template("StudentDashboard.html", 
+    #                        student_name=student_name, 
+    #                        total_attendance=total_attendance_percentage, 
+    #                        subject_attendance=subject_attendance)
+    return render_template("StudentDashboard.html", 
+                       student_name=student_name, 
+                       total_attendance=total_attendance_percentage, 
+                       total_attended=total_attended,
+                       total_classes_all=total_classes_all,
+                       subject_attendance=subject_attendance)
+
+
 
 
 @app.route('/student_login', methods=['GET', 'POST'])
@@ -200,12 +370,13 @@ def student_login():
 
         if student:
             # session['student'] = roll_no
+            session['student_name'] = student[1]
             return redirect(url_for('student_dashboard'))
         else:
             # flash("Invalid roll number or password", "danger")
-            return render_template('StudentLogin.html')
+            return render_template('StudentLogin.html',message="Invalid Roll Number or Password")
 
-    return render_template('StudentLogin.html')
+    return render_template('StudentLogin.html',message="Please enter Roll Number and Password")
 
 
 @app.route('/new', methods=['GET', 'POST'])
@@ -232,7 +403,7 @@ def name():
 
 @app.route('/open_camera',methods=['POST'])
 def open_camera():
-    name1 = request.form.get('names')
+    name1 = request.form.get('name')
     name2 = request.form.get('rollno')
 
     if not name1 or not name2:
@@ -266,119 +437,104 @@ def open_camera():
     cv2.destroyAllWindows()
     return jsonify({"status": "failed"})
 
-@app.route("/",methods=["GET","POST"])
-def recognize():
-     if request.method=="POST":
-        path = 'Training images'
-        images = []
-        classNames = []
-        myList = os.listdir(path)
-        print(myList)
-        for cl in myList:
-            curImg = cv2.imread(f'{path}/{cl}')
-            images.append(curImg)
-            classNames.append(os.path.splitext(cl)[0])
-        print(classNames)
-        
-        def findEncodings(images):
-            encodeList = []
-            for img in images:
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                encode = face_recognition.face_encodings(img)[0]
-                if not len(encode):
-                    print( "can't be encoded")
-                    continue
-                encodeList.append(encode)
-            return encodeList
 
-        def markData(name):
-            print("The Attended Person is ",name)
-            now = datetime.now()
-            dtString = now.strftime('%H:%M')
-            today = date.today()
-            d1 = today.strftime('%b-%d-%Y')
-            print("Today's date:", today)
-            conn = sqlite3.connect('information.db')
-            conn.execute('''CREATE TABLE IF NOT EXISTS Attendance
-                            (NAME TEXT  NOT NULL,
-                             Time  TEXT NOT NULL ,Date TEXT NOT NULL)''')
-                       
-            conn.execute("INSERT or Ignore into Attendance (NAME,Time,Date) values (?,?,?)",(name,dtString,today,))
-            conn.commit()  
-            cursor = conn.execute("SELECT NAME,Time,Date from Attendance")
-                                                                  
-            for line in cursor:
-                print("Name Updated :",line[0])
-                print("Time Updated :",line[1])
-            
+# Function to store attendance in the database
+def markData(name, subject):
+    print("The Attended Person is", name)
+    now = datetime.now()
+    dtString = now.strftime('%H:%M')
+    today = date.today()
 
-        
-        def markAttendance(name):
-            with open('attendance.csv','r+',errors='ignore') as f:
-                myDataList = f.readlines()
-                nameList = []
-                for line in myDataList:
-                    print(myDataList)
-                    entry = line.split(',')
-                    nameList.append(entry[0])
-                if name not in nameList:
-                    now = datetime.now()
-                    dtString = now.strftime('%H:%M')
-                    f.writelines(f'\n{name},{dtString}')
-    
+    conn = sqlite3.connect('information.db')
+    cursor = conn.cursor()
 
+    # Get student's roll number
+    cursor.execute("SELECT roll_no FROM Students WHERE name=?", (name.upper(),))
+    print("QUERY: ")
+    print(name)
+    student = cursor.fetchone()
 
-        
-        # ### FOR CAPTURING SCREEN RATHER THAN WEBCAM
-        # def captureScreen(bbox=(300,300,690+300,530+300)):
-        #     capScr = np.array(ImageGrab.grab(bbox))
-        #     capScr = cv2.cvtColor(capScr, cv2.COLOR_RGB2BGR)
-        #     return capScr
-        
-        encodeListKnown = findEncodings(images)
-        print('Encoding Complete')
-        
+    if student is None:
+        print(f"No student record found for {name}")
+        return
+
+    rollno = student[0]
+
+    # Ensure Attendance table exists
+    conn.execute('''CREATE TABLE IF NOT EXISTS Attendance (
+                    ROLLNO VARCHAR NOT NULL, 
+                    NAME TEXT NOT NULL, 
+                    Subject TEXT NOT NULL,
+                    Time TEXT NOT NULL,
+                    Date TEXT NOT NULL)''')
+
+    # # Check if attendance is already marked
+    # cursor.execute("SELECT * FROM Attendance WHERE NAME=? AND Subject=? AND Date=?", (name.upper(), subject.upper(), today))
+    # existing_entry = cursor.fetchone()
+
+    # if not existing_entry:
+    cursor.execute("INSERT INTO Attendance (ROLLNO, NAME, Subject, Time, Date) VALUES (?, ?, ?, ?, ?)",
+                       (rollno, name.upper(), subject.upper(), dtString, today))
+    conn.commit()
+    print(f"Attendance marked for {name} in {subject} at {dtString} on {today}")
+
+    conn.close()
+
+@app.route("/markattendance", methods=["GET", "POST"])
+def markattendance():
+    global marked_students  # Use the global set
+
+    if request.method == "POST":
+        # Load stored encodings
+        with open('encodings.pickle', 'rb') as f:
+            encodeListKnown, classNames = pickle.load(f)
+
+        print('Encodings Loaded!')
+
+        subject = request.form.get("subject")
+        if not subject:
+            return "Please select a subject before marking attendance."
+
         cap = cv2.VideoCapture(0)
-        
         while True:
             success, img = cap.read()
-            #img = captureScreen()
-            imgS = cv2.resize(img,(0,0),None,0.25,0.25)
+            imgS = cv2.resize(img, (0, 0), None, 0.25, 0.25)
             imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
-        
+
             facesCurFrame = face_recognition.face_locations(imgS)
-            encodesCurFrame = face_recognition.face_encodings(imgS,facesCurFrame)
-        
-            for encodeFace,faceLoc in zip(encodesCurFrame,facesCurFrame):
-                matches = face_recognition.compare_faces(encodeListKnown,encodeFace)
-                faceDis = face_recognition.face_distance(encodeListKnown,encodeFace)
-                #print(faceDis)
+            encodesCurFrame = face_recognition.face_encodings(imgS, facesCurFrame)
+
+            for encodeFace, faceLoc in zip(encodesCurFrame, facesCurFrame):
+                matches = face_recognition.compare_faces(encodeListKnown, encodeFace)
+                faceDis = face_recognition.face_distance(encodeListKnown, encodeFace)
                 matchIndex = np.argmin(faceDis)
-        
-                if faceDis[matchIndex]< 0.50:
+
+                if matches[matchIndex] and faceDis[matchIndex] < 0.6:
                     name = classNames[matchIndex].upper()
-                    markAttendance(name)
-                    markData(name)
+
+                    # **Mark attendance only if not already recorded in this session**
+                    if (name, subject) not in marked_students:
+                        markData(name, subject)
+                        marked_students.add((name, subject))  # Add to session list
                 else:
                     name = 'Unknown'
-                #print(name)
-                y1,x2,y2,x1 = faceLoc
-                y1, x2, y2, x1 = y1*4,x2*4,y2*4,x1*4
-                cv2.rectangle(img,(x1,y1),(x2,y2),(0,255,0),2)
-                cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,255,0),cv2.FILLED)
-                cv2.putText(img,name,(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
-            cv2.imshow('Punch your Attendance',img)
-            c=cv2.waitKey(1)
-            if c == 27:
+
+                y1, x2, y2, x1 = faceLoc
+                y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
+                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.putText(img, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+
+            cv2.imshow('Punch your Attendance', img)
+            if cv2.waitKey(1) == 27:  # ESC to exit
                 break
+
         cap.release()
         cv2.destroyAllWindows()
+        marked_students.clear()
+        return render_template('MarkAttendance.html',message="Attendance has been marked successfully.")
 
-        return render_template('AttendanceComplete.html')
-        
-     else:
-        return render_template('HomePage.html')
-
+    else:
+        return render_template('MarkAttendance.html')
 
 @app.route('/login',methods = ['POST'])
 def login():
@@ -420,7 +576,18 @@ def regteacher():
 
 @app.route('/mark',methods=["GET","POST"])
 def mark():
-    return render_template('MarkAttendance.html')
+    conn = sqlite3.connect('information.db')
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # Fetch subjects dynamically from the Subjects table
+    cur.execute("SELECT DISTINCT name FROM Subjects")
+    subjects = [row["name"] for row in cur.fetchall()]
+    
+    conn.close()
+    
+    return render_template('MarkAttendance.html', subjects=subjects)
+    # return render_template('MarkAttendance.html')
 
 @app.route('/clear_filter',methods=["GET","POST"])
 def clear_filter():
@@ -439,6 +606,16 @@ def manage_subjects():
     return render_template('ManageSubjects.html', subjects=subjects)
     # return render_template('ManageSubjects.html')
 
+@app.route("/delete_subject/<string:code>")
+def delete_subject(code):
+    conn = sqlite3.connect("information.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM subjects WHERE code = ?", (code,))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("manage_subjects"))
+
 @app.route('/adminlogin',methods=["GET","POST"])
 def adminlogin():
     return render_template('AdminLogin.html')
@@ -449,6 +626,10 @@ def contact():
 
 @app.route('/home',methods=["GET","POST"])
 def home():
+    return render_template('HomePage.html')
+    
+@app.route('/',methods=["GET","POST"])
+def homepage():
     return render_template('HomePage.html')
 
 
