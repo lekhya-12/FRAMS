@@ -149,7 +149,8 @@
         <div class="dropdown">
             <button class="menu-btn">Menu</button>
             <div class="dropdown-content">
-                <a href="/new">Register Student</a>
+                <a href="/view_student">View Student Details</a>
+                <a href="/new">Register New Student</a>
                 <a href="/manage_subjects">Manage Subjects</a>
                 <a href="/view_attendance">View Attendance Report</a>
                 <a href="/mark">Mark Attendance</a>
@@ -175,6 +176,10 @@
                     <input class="form-control" type="text" id="rollno" name="rollno" placeholder="Enter Your Roll Number" required>
                 </div>
                 <div class="mb-3 text-start">
+                    <label class="form-label">Branch:</label>
+                    <input class="form-control" type="text" id="branch" name="branch" placeholder="Enter Your Branch" required>
+                </div>
+                <div class="mb-3 text-start">
                     <label class="form-label">Year:</label>
                     <select class="form-control" id="year" name="year">
                         <option value="1">1st Year</option>
@@ -189,7 +194,7 @@
                 </div>
                 <div class="mb-3 text-start">
                     <label class="form-label">Phone Number:</label>
-                    <input class="form-control" type="text" id="phone_number" name="phone_number" placeholder="Enter Your Phone Number" required>
+                    <input class="form-control" type="tel" id="phone_number" name="phone_number" placeholder="Enter Your Phone Number" required>
                 </div>
                 <div class="mb-3 text-start">
                     <label class="form-label">Password:</label>
@@ -214,7 +219,13 @@
     <script>
         let imageCaptured = false;
         document.getElementById("capture-btn").addEventListener("click", function() {
-            fetch('/open_camera', { method: "POST" })
+            const formData = new FormData(document.getElementById("register-form"));
+
+            fetch('/open_camera', { 
+                method: "POST", 
+                body: formData 
+            })
+
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === "captured") {

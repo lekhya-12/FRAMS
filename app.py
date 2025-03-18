@@ -26,7 +26,7 @@ conn.close()
 # Database setup
 conn = sqlite3.connect('information.db')
 conn.execute('''CREATE TABLE IF NOT EXISTS Teachers (id VARCHAR PRIMARY KEY, name TEXT, dept TEXT, email TEXT, phone_number TEXT, password TEXT)''')
-conn.execute('''CREATE TABLE IF NOT EXISTS Students (roll_no VARCHAR PRIMARY KEY, name TEXT, year TEXT, email TEXT, phone_number TEXT, password TEXT)''')
+conn.execute('''CREATE TABLE IF NOT EXISTS Students (roll_no VARCHAR PRIMARY KEY, name TEXT, year TEXT, email TEXT, phone_number TEXT, password TEXT, branch TEXT)''')
 conn.execute('''CREATE TABLE IF NOT EXISTS Subjects (
     code VARCHAR PRIMARY KEY ,
     name TEXT UNIQUE NOT NULL,
@@ -230,6 +230,9 @@ def teacher_login():
 
         if teacher:
             session['teacher_name'] = teacher[1]
+            session['dept'] = teacher[2]
+            session['email'] = teacher[3]
+            session['phn'] = teacher[4]
             return redirect(url_for('teacher_dashboard'))
         else:
             return render_template('TeacherLogin.html',message="Invalid Teacher ID or Password")
@@ -250,7 +253,7 @@ def teacher_register():
         conn = sqlite3.connect('information.db')
         # try:
         conn.execute("INSERT INTO Teachers (id,name, dept, email, phone_number, password) VALUES (?,?, ?, ?, ?, ?)",
-                         (tid,name.upper(), dept.upper(), email.upper(), phone_number, password))
+                         (tid,name.upper(), dept.upper(), email, phone_number, password))
         conn.commit()
         conn.close()
 
@@ -263,14 +266,15 @@ def student_register():
     if request.method == "POST":
         name = request.form.get('name')
         rollno=request.form.get('rollno')
+        branch=request.form.get('branch')
         year = request.form.get('year')
         email = request.form.get('email')
         phone_number = request.form.get('phone_number')
         password = request.form.get('password')
 
         conn = sqlite3.connect('information.db')
-        conn.execute("INSERT INTO Students (roll_no, name, year, email, phone_number, password) VALUES (?,?, ?, ?, ?, ?)",
-                         (rollno,name.upper(), year, email.upper(), phone_number, password))
+        conn.execute("INSERT INTO Students (roll_no, name, year, email, phone_number, password, branch) VALUES (?,?, ?, ?, ?, ?, ?)",
+                         (rollno,name.upper(), year, email, phone_number, password, branch.upper()))
         conn.commit()
         conn.close()
         update_encodings()
@@ -278,10 +282,13 @@ def student_register():
 
     return render_template('StudentRegister.html')
 
-@app.route("/teacher_dashbaord")
+@app.route("/teacher_dashboard")
 def teacher_dashboard():
     teacher_name = session.get("teacher_name")
-    if not teacher_name:
+    teacher_dept = session.get("dept")
+    teacher_email = session.get("email")
+    teacher_phn = session.get("phn")
+    if not teacher_name and not teacher_dept and not teacher_email and not teacher_phn:
         return "Unauthorized access. Please log in."
     
     conn = sqlite3.connect('information.db')
@@ -298,13 +305,17 @@ def teacher_dashboard():
 
     conn.close()
 
-    return render_template('TeacherDashboard.html', teacher_name=teacher_name, 
+    return render_template('TeacherDashboard.html', teacher_name=teacher_name, teacher_dept=teacher_dept, teacher_email=teacher_email, teacher_phn = teacher_phn,
                            total_subjects=total_subjects, total_students=total_students)
 
 @app.route("/student_dashboard")
 def student_dashboard():
-    student_name = session.get("student_name")  # Fetch logged-in student's name
-    if not student_name:
+    stu_name = session.get("student_name")  # Fetch logged-in student's name
+    stu_roll = session.get("stu_roll")
+    stu_branch = session.get("stu_branch")
+    stu_email = session.get("stu_email")
+    stu_phn = session.get("stu_phn")
+    if not stu_name and not stu_roll and not stu_email and not stu_branch and not stu_phn :
         return "Unauthorized access. Please log in."
 
     conn = sqlite3.connect("information.db")
@@ -315,7 +326,7 @@ def student_dashboard():
     all_subjects = [row[0] for row in cursor.fetchall()]  # List of all subjects
 
     # Fetch subject-wise attendance for the student
-    cursor.execute("SELECT Subject, COUNT(*) FROM Attendance WHERE NAME = ? GROUP BY Subject", (student_name.upper(),))
+    cursor.execute("SELECT Subject, COUNT(*) FROM Attendance WHERE NAME = ? GROUP BY Subject", (stu_name.upper(),))
     attendance_data = dict(cursor.fetchall())  # Convert to dictionary {subject: attended_count}
 
     # Fetch total classes held for each subject
@@ -346,7 +357,7 @@ def student_dashboard():
     #                        total_attendance=total_attendance_percentage, 
     #                        subject_attendance=subject_attendance)
     return render_template("StudentDashboard.html", 
-                       student_name=student_name, 
+                       stu_name=stu_name, stu_roll=stu_roll, stu_phn=stu_phn, stu_branch=stu_branch, stu_email=stu_email,
                        total_attendance=total_attendance_percentage, 
                        total_attended=total_attended,
                        total_classes_all=total_classes_all,
@@ -371,6 +382,10 @@ def student_login():
         if student:
             # session['student'] = roll_no
             session['student_name'] = student[1]
+            session['stu_roll'] = student[0]
+            session['stu_branch'] = student[6]
+            session['stu_email'] = student[3]
+            session['stu_phn'] = student[4]
             return redirect(url_for('student_dashboard'))
         else:
             # flash("Invalid roll number or password", "danger")
@@ -405,10 +420,11 @@ def name():
 def open_camera():
     name1 = request.form.get('name')
     name2 = request.form.get('rollno')
-
+    print(name1)
+    print(name2)
     if not name1 or not name2:
         return jsonify({"status": "failed", "message": "Missing form data"}), 400
-
+    print('hi')
     cam = cv2.VideoCapture(0)
     cv2.namedWindow("Press Space to Capture Image")
 
@@ -726,6 +742,27 @@ def sendMail():
     server.sendmail(mssg["From"],mssg["To"],mssg.as_string())
    # server.quit()
 
+@app.route('/view_student', methods=['GET', 'POST'])
+def view_student():
+    return render_template("ViewStudent.html")
+
+@app.route('/student_details', methods=['GET', 'POST'])
+def student_details():
+    conn = sqlite3.connect("information.db")  # Change this to your database filename
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT roll_no, name, year, email FROM Students")
+    students = cursor.fetchall()
+    
+    conn.close()
+
+    # Convert the fetched data into a list of dictionaries
+    student_list = [
+        {"rollno": row[0], "name": row[1], "year": row[2], "email": row[3]}
+        for row in students
+    ]
+    
+    return jsonify(student_list)
 
 
 
