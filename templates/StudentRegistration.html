@@ -214,7 +214,13 @@
     <script>
         let imageCaptured = false;
         document.getElementById("capture-btn").addEventListener("click", function() {
-            fetch('/open_camera', { method: "POST" })
+            const formData = new FormData(document.getElementById("register-form"));
+
+            fetch('/open_camera', 
+            { 
+                method: "POST",
+                body: formData,
+             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === "captured") {
