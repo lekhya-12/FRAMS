@@ -10,7 +10,6 @@ from datetime import datetime
 from datetime import date
 import sqlite3
 
-name="amlan"
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 marked_students = set()
