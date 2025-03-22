@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -14,7 +13,6 @@
             background: #e0d8fe;
         }
 
-        /* Navbar */
         .header {
             background: #4B0082;
             color: white;
@@ -43,7 +41,7 @@
             display: inline-block;
             text-align: center;
             line-height: normal;
-            width: auto; /* Ensures it adjusts to content */
+            width: auto;
         }
         
         .profile-btn {
@@ -57,7 +55,6 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
-        /* Container */
         .container {
             padding: 30px;
             text-align: center;
@@ -72,7 +69,6 @@
             font-weight: 600;
         }
 
-        /* Attendance Summary */
         .attendance-summary {
             margin-top: 25px;
             display: flex;
@@ -106,7 +102,6 @@
             font-weight: bold;
         }
 
-        /* Table */
         table {
             width: 70%;
             margin: 30px auto;
@@ -133,7 +128,6 @@
             background: #f1f1f1;
         }
 
-        /* Profile Modal */
         .modal {
             display: none;
             position: fixed;
@@ -150,11 +144,11 @@
         .modal-content {
             background: white;
             height: 480px;
-            padding: 45px; /* Increased padding */
+            padding: 45px; 
             border-radius: 12px;
             text-align: center;
-            width: 450px; /* Increased width */
-            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.3); /* Deeper shadow */
+            width: 450px; 
+            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.3); 
             font-size: 24px;
         }
 
@@ -195,9 +189,8 @@
     </div>
 
     <div class="container">
-        <h1>Welcome {{ student_name }}</h1>
+        <h1>Welcome {{ stu_name }}</h1>
 
-        <!-- Total Attendance Summary -->
         <div class="attendance-summary">
             <div class="stat-box">
                 <h3>Total Attendance</h3>
@@ -213,7 +206,6 @@
             </div>
         </div>
 
-        <!-- Subject-wise Attendance -->
         <h2>Subject-wise Attendance</h2>
         <table>
             <tr>

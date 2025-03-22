@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Details</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
+    <style>
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -14,7 +14,6 @@
             background: #e0d8fe;
         }
 
-        /* Navbar */
         .header {
             background: #4B0082;
             color: white;
@@ -53,7 +52,6 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
-        /* Dropdown */
         .dropdown {
             position: relative;
         }
@@ -86,7 +84,6 @@
             display: block;
         }
 
-        /* Container */
         .container {
             padding: 30px;
             text-align: center;
@@ -97,7 +94,6 @@
             font-weight: 600;
         }
 
-        /* Table */
         table {
             width: 70%;
             margin: 30px auto;
@@ -127,7 +123,6 @@
 </head>
 <body>
 
-    <!-- Navbar -->
     <div class="header">
         <h2>Student Details</h2>
         <div class="menu-container">
@@ -136,17 +131,16 @@
                 <button class="menu-btn">Menu</button>
                 <div class="dropdown-content">
                     <a href="/view_student">View Student Details</a>
-                    <a href="/new">Register New Student</a>
+                    <a href="/new_student">Register New Student</a>
                     <a href="/manage_subjects">Manage Subjects</a>
                     <a href="/view_attendance">View Attendance Report</a>
-                    <a href="/mark">Mark Attendance</a>
+                    <a href="/mark_attendance_page">Mark Attendance</a>
                 </div>
             </div>
             <button class="logout-btn" onclick="window.location.href='/home'">Logout</button>
         </div>
     </div>
 
-    <!-- Student Details Table -->
     <div class="container">
         <h1>Student Details</h1>
         <table>
@@ -155,15 +149,15 @@
                 <th>Name</th>
                 <th>Year</th>
                 <th>Email</th>
+                <th>Phone Number</th>
+                <th>Branch</th>
             </tr>
             <tbody id="studentTable">
-                <!-- Data will be inserted here dynamically -->
             </tbody>
         </table>
     </div>
 
     <script>
-        // Fetch student details from backend
         fetch('/student_details')
             .then(response => response.json())
             .then(data => {
@@ -174,6 +168,8 @@
                         <td>${student.name}</td>
                         <td>${student.year}</td>
                         <td>${student.email}</td>
+                        <td>${student.phone_number}</td>
+                        <td>${student.branch}</td>
                     </tr>`;
                     tableBody.innerHTML += row;
                 });

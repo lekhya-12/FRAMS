@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -14,7 +14,6 @@
             background: #e0d8fe;
         }
 
-        /* Navbar */
         .header {
             background: #4B0082;
             color: white;
@@ -53,29 +52,18 @@
             background: rgba(255, 255, 255, 0.4);
         }
        
-
-        /* Center Welcome Message */
         .head h1 {
             text-align: center;
             color: #4B0082;
             font-weight: 600;
-            /*margin-top: 20px;*/
             font-size: 40px;
         }
 
-        /* Layout */
         .main-container {
             display: flex;
             justify-content: space-around;
             padding: 40px;
             align-items: flex-start;
-        }
-
-        /* Stats Section - Left */
-        .dashboard-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
 
         .stat-box {
@@ -106,7 +94,6 @@
             font-weight: bold;
         }
 
-        /* Dashboard Links - Right in Vertical Order */
         .dashboard-links {
             display: flex;
             flex-direction: column;
@@ -140,7 +127,6 @@
             box-shadow: 0 6px 20px rgba(75, 0, 130, 0.3);
         }
 
-        /* Profile Modal */
         .modal {
             display: none;
             position: fixed;
@@ -157,11 +143,11 @@
         .modal-content {
             background: white;
             height: 480px;
-            padding: 45px; /* Increased padding */
+            padding: 45px; 
             border-radius: 12px;
             text-align: center;
-            width: 450px; /* Increased width */
-            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.3); /* Deeper shadow */
+            width: 450px;
+            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.3); 
             font-size: 24px;
         }
 
@@ -206,7 +192,6 @@
     </div>
 
     <div class="main-container">
-        <!-- Stats Section -->
         <div class="d-flex flex-column justify-content-text:center">
             <div class="stat-box">
                 <h3>Total Subjects</h3>
@@ -218,13 +203,12 @@
             </div>
         </div>
 
-        <!-- Dashboard Links Section -->
         <div class="dashboard-links">
             <a href="/view_student" class="link-card">View Student Details</a>
-            <a href="/new" class="link-card">Register New Student</a>
+            <a href="/new_student" class="link-card">Register New Student</a>
             <a href="/manage_subjects" class="link-card">Manage Subjects</a>
             <a href="/view_attendance" class="link-card">View Attendance Report</a>
-            <a href="/mark" class="link-card">Mark Attendance</a>
+            <a href="/mark_attendance_page" class="link-card">Mark Attendance</a>
         </div>
     </div>
 

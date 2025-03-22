@@ -9,141 +9,85 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f8f0ff; /* Light Lavender */
+      background-color: #f8f0ff; 
       color: #4a4a4a;
     }
 
-    /* Navbar */
-    .navbar {
-      background-color: #6a5acd; /* Soft Purple */
-      padding: 15px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar-brand {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: white;
-    }
-
-    .navbar-nav .nav-link {
-      color: white;
-      font-size: 1.1rem;
-      padding: 8px 15px;
-      border-radius: 8px;
-      transition: 0.3s;
-    }
-
-    .navbar-nav .nav-link:hover {
-      background-color: #5a4dbd;
-    }
-
     .hero-section {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: calc(100vh - 80px); /* Adjust based on navbar height */
-    /* margin: 20px; */
-    border-radius: 15px; /* Remove rounded corners */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Remove box shadow */
-    background-color: #e0d8fe; /* Softer Lavender */
-    
-}
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 80px); 
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
+      background-color: #e0d8fe;  
+    }
 
     .hero-text {
       max-width: 45%;
     }
 
     .hero-text h1 {
-      /* font-weight: 600; */
       font-size: 2.8rem;
-      /* color: #6a5acd; */
       color: #4B0082;
-            font-weight: 600;
+      font-weight: 600;
     }
-    
 
     .hero-text p {
       font-size: 1.2rem;
       margin-top: 10px;
     }
-
-    .btn-custom {
-      background-color: #6a5acd;
-      color: white;
-      border-radius: 50px;
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      transition: 0.3s;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-custom:hover {
-      background-color: #5a4dbd;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #fff;
-      margin-top: 40px;
-      box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1);
-    }
-    /* Navbar */
+    
     .header {
-            background: #4B0082;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+        background: #4B0082;
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
-        .header h2 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 24px;
-        }
+    .header h2 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 24px;
+    }
 
-        .menu-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    .menu-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
 
-        .home-btn, .tlogin-btn, .slogin-btn {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 6px;
-            border: none;
-            color: white;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.3s ease;
-        }
+    .home-btn, .tlogin-btn, .slogin-btn {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 6px;
+        border: none;
+        color: white;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
 
-        .home-btn:hover, .tlogin-btn:hover, .slogin-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
+    .home-btn:hover, .tlogin-btn:hover, .slogin-btn:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
         
   </style>
 </head>
 <body>
-
     <div class="header">
     <h2>FRAMS</h2>
     <div class="menu-container">
-        
         <button class="home-btn" onclick="window.location.href='/home'">Home</button>
         <button class="tlogin-btn" onclick="window.location.href='/teacher'">Teacher Login</button>
         <button class="slogin-btn" onclick="window.location.href='/student'">Student Login</button>
     </div>
 </div>
 
-  <!-- Hero Section -->
   <section class="hero-section">
     <div class="hero-text">
       <h1>Face Recognition Attendance System</h1>
@@ -154,10 +98,5 @@
     </div>
   </section>
 
-  <!-- <footer> 
-    &copy; 2025 FRAMS. All Rights Reserved.
-  </footer> -->
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
